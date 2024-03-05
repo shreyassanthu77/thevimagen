@@ -1,5 +1,10 @@
 /// <reference lib="deno.window" />
-import { build, emptyDir } from "https://deno.land/x/dnt@0.40.0/mod.ts";
+import {
+  build,
+  type BuildOptions,
+  emptyDir,
+} from "https://deno.land/x/dnt@0.40.0/mod.ts";
+import config from "./deno.json" with { type: "json" };
 
 await emptyDir("./npm");
 
@@ -9,8 +14,10 @@ await build({
   shims: {
     deno: false,
   },
+  compilerOptions: config.compilerOptions as BuildOptions["compilerOptions"],
   declaration: "inline",
   scriptModule: "umd",
+  test: false,
   package: {
     name: "thevimagen",
     version: Deno.args[0],
