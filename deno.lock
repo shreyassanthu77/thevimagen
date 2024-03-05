@@ -1,0 +1,7 @@
+{
+  "version": "3",
+  "redirects": {
+    "https://deno.land/x/dnt/mod.ts": "https://deno.land/x/dnt@0.40.0/mod.ts"
+  },
+  "remote": {}
+}
