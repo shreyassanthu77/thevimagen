@@ -5,6 +5,7 @@
     "strict": true
   },
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "dev": "deno run -A npm:vite",
+    "build": "deno run -A build.ts"
   }
 }

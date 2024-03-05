@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vimagen</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      div[contenteditable] {
+        border: 1px solid #f0f0f0;
+        padding: 10px;
+        margin: 10px;
+        min-height: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" />
+    <input type="text" />
+
+    <div contenteditable="true"></div>
+    <script type="module" src="src/mod.ts"></script>
+  </body>
+</html>
