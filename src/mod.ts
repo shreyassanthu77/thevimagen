@@ -105,8 +105,8 @@ function normalMode(e: KeyboardEvent) {
     }
     console.log(activeElement);
     return;
-    const pos = focusManager.find(activeElement);
-    console.log(pos);
+    // const pos = focusManager.find(activeElement);
+    // console.log(pos);
     // pos?.up?.el?.focus();
     // if (!pos) {
     //   focusManager.topLeft.el.focus();
