@@ -19,19 +19,32 @@
         font-family: Arial, Helvetica, sans-serif;
       }
 
-      div[contenteditable] {
-        border: 1px solid #f0f0f0;
-        padding: 10px;
-        margin: 10px;
-        min-height: 100px;
+      div {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      button {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: black;
       }
     </style>
   </head>
   <body>
-    <input type="text" />
-    <input type="text" />
-
-    <div contenteditable="true"></div>
+    <div>
+      <button>Button 1</button>
+      <button>Button 2</button>
+      <button>Button 3</button>
+      <button>Button 4</button>
+      <button disabled>Button 5</button>
+      <button>Button 6</button>
+      <button>Button 7</button>
+      <button>Button 8</button>
+      <button>Button 9</button>
+    </div>
     <script type="module" src="src/mod.ts"></script>
   </body>
 </html>

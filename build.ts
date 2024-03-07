@@ -16,7 +16,8 @@ await build({
   },
   compilerOptions: config.compilerOptions as BuildOptions["compilerOptions"],
   declaration: "inline",
-  scriptModule: "umd",
+  esModule: true,
+  scriptModule: false,
   test: false,
   package: {
     name: "thevimagen",
