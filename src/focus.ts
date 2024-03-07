@@ -82,7 +82,11 @@ function isFocusable(el: Element) {
 
 export class VimFocusManager {
   #elementNodeMap: Map<Element, ElementNode>;
+
   #topLeftNode?: ElementNode;
+  get topLeftNode() {
+    return this.#topLeftNode?.el;
+  }
 
   constructor() {
     this.#elementNodeMap = new Map();
@@ -101,10 +105,13 @@ export class VimFocusManager {
 
       if (!this.#topLeftNode) {
         this.#topLeftNode = newNode;
-      } else if (
-        rect.x <= this.#topLeftNode.rect.x && rect.y <= this.#topLeftNode.rect.y
-      ) {
-        this.#topLeftNode = newNode;
+      } else {
+        const tl = this.#topLeftNode;
+        if (
+          tl.center.x >= newNode.center.x && tl.center.y >= newNode.center.y
+        ) {
+          this.#topLeftNode = newNode;
+        }
       }
       this.#updateConnections(newNode);
     });
@@ -180,36 +187,21 @@ export class VimFocusManager {
     if (node.down) return node.down;
     // find the nearest node in the column below
     let left = node.left;
+    while (left && !left.down) {
+      left = left.left;
+    }
+
     let right = node.right;
-    while (true) {
-      if (!left && !right) {
-        return;
-      } else if (left && right) {
-        if (left.down && right.down) {
-          if (left.rect.x < right.rect.x) {
-            return left.down;
-          } else {
-            return right.down;
-          }
-        } else if (left.down) {
-          return left.down;
-        } else if (right.down) {
-          return right.down;
-        } else {
-          if (left.left) left = left.left;
-          if (right.right) right = right.right;
-        }
-      } else if (left) {
-        if (left.down) {
-          return left.down;
-        } else left = left.left;
-      } else if (right) {
-        if (right.down) {
-          return right.down;
-        } else right = right.right;
-      } else {
-        break;
-      }
+    while (right && !right.down) {
+      right = right.right;
+    }
+
+    if (left && right) {
+      return closestCenter(node, left.down, right.down);
+    } else if (left) {
+      return left.down;
+    } else if (right) {
+      return right.down;
     }
   }
 
@@ -221,7 +213,12 @@ export class VimFocusManager {
     // find the nearest node in the column above
     let left = node.left;
     let right = node.right;
+    let i = 0;
     while (true) {
+      if (i++ > 100) {
+        console.warn("infinite loop");
+        break; // prevent infinite loop
+      }
       if (!left && !right) {
         break;
       } else if (left && right) {
@@ -261,26 +258,50 @@ export class VimFocusManager {
     return node.right;
   }
 
-  focusH(el?: Element) {
-    const node = this.h(el);
+  focusH(el?: Element, n = 1) {
+    let node = this.h(el);
+    while (n > 1) {
+      const nxt = this.h(node?.el);
+      if (!nxt) break;
+      node = nxt;
+      n--;
+    }
     // @ts-ignore - focus is not defined on Element but he element could be an HTMLElement
     node?.el?.focus();
   }
 
-  focusJ(el?: Element): void {
-    const node = this.j(el);
+  focusJ(el?: Element, n = 1): void {
+    let node = this.j(el);
+    while (n > 1) {
+      const nxt = this.j(node?.el);
+      if (!nxt) break;
+      node = nxt;
+      n--;
+    }
     // @ts-ignore - focus is not defined on Element but he element could be an HTMLElement
     node?.el.focus();
   }
 
-  focusK(el?: Element): void {
-    const node = this.k(el);
+  focusK(el?: Element, n = 1): void {
+    let node = this.k(el);
+    while (n > 1) {
+      const nxt = this.k(node?.el);
+      if (!nxt) break;
+      node = nxt;
+      n--;
+    }
     // @ts-ignore - focus is not defined on Element but he element could be an HTMLElement
     node?.el.focus();
   }
 
-  focusL(el?: Element) {
-    const node = this.l(el);
+  focusL(el?: Element, n = 1) {
+    let node = this.l(el);
+    while (n > 1) {
+      const nxt = this.l(node?.el);
+      if (!nxt) break;
+      node = nxt;
+      n--;
+    }
     // @ts-ignore - focus is not defined on Element but he element could be an HTMLElement
     node?.el?.focus();
   }

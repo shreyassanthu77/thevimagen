@@ -13,6 +13,7 @@ export class VimMode {
 }
 
 type KeyHandlerOptions = {
+  n: number;
   el: Element | undefined;
   fm: VimFocusManager;
   mode: VimMode;
@@ -102,18 +103,27 @@ type Key<CapitalOnly extends boolean = false> =
   | "F11"
   | "F12";
 export type KeyCombo =
-  | `${Ctrl}${Alt}${Key}`
+  | `${Shift}${Alt}${Key}`
   | `${Ctrl}${Shift}${Alt}${Key<true>}`;
 
 export const execDefault: KeyHandler = ({ runDefault }) => runDefault();
 
+export const left: KeyHandler = ({ n, el, fm }) => fm.focusH(el, n);
+export const down: KeyHandler = ({ n, el, fm }) => fm.focusJ(el, n);
+export const up: KeyHandler = ({ n, el, fm }) => fm.focusK(el, n);
+export const right: KeyHandler = ({ n, el, fm }) => fm.focusL(el, n);
+
 export class KeyMap {
   #keyMap: Record<Mode, Map<KeyCombo, KeyHandler>> = {
     normal: new Map([
-      ["h", ({ el, fm }) => fm.focusH(el)],
-      ["j", ({ el, fm }) => fm.focusJ(el)],
-      ["k", ({ el, fm }) => fm.focusK(el)],
-      ["l", ({ el, fm }) => fm.focusL(el)],
+      ["h", left],
+      ["ArrowLeft", left],
+      ["j", down],
+      ["ArrowDown", down],
+      ["k", up],
+      ["ArrowUp", up],
+      ["l", right],
+      ["ArrowRight", right],
       ["i", ({ mode }) => mode.set("insert")],
       ["C-Tab", execDefault],
       // devtools
@@ -146,10 +156,35 @@ export class KeyMap {
     return this.#keyMap[mode].has(keyCombo);
   }
 
-  set(mode: Mode, keyCombo: KeyCombo, handler: KeyHandler, remap = false) {
-    if (!remap && this.has(mode, keyCombo)) {
-      throw new Error(`KeyCombo ${keyCombo} already exists in mode ${mode}`);
+  set(mode: Mode, keyCombo: KeyCombo, handler: KeyHandler, replace = false) {
+    if (!replace && this.has(mode, keyCombo)) {
+      throw new Error(
+        `KeyCombo ${keyCombo} already exists in mode ${mode}. set the third argument to true to replace it.`,
+      );
     }
     this.#keyMap[mode].set(keyCombo, handler);
+  }
+
+  remap(mode: Mode, from: KeyCombo, to: KeyCombo) {
+    const handler = this.#keyMap[mode].get(from);
+    if (!handler) {
+      throw new Error(`KeyCombo ${from} does not exist in mode ${mode}`);
+    }
+    this.#keyMap[mode].set(to, handler);
+    this.#keyMap[mode].delete(from);
+  }
+
+  align(mode: Mode, keyCombo: KeyCombo, to: KeyCombo) {
+    const handler = this.#keyMap[mode].get(keyCombo);
+    if (!handler) {
+      throw new Error(`KeyCombo ${keyCombo} already exists in mode ${mode}`);
+    }
+
+    const toHandler = this.#keyMap[mode].get(to);
+    if (!toHandler) {
+      throw new Error(`KeyCombo ${to} does not exist in mode ${mode}`);
+    }
+
+    this.#keyMap[mode].set(keyCombo, toHandler);
   }
 }
